@@ -5,6 +5,7 @@
  */
 package controller;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import model.Client;
@@ -20,11 +21,15 @@ import view.MessageObservable;
 public class Controller implements Observer
 {
 
-    JDisplay _form;
-    MessageObservable _messages;
+    private JDisplay _form;
+    private MessageObservable _messages;
+    private int i = 0;
+    private ArrayList<Client> _clients;
 
     public void start()
     {
+        this._clients = new ArrayList<Client>();
+        this._clients.add(new Client());
         _messages = new MessageObservable();
         _messages.addObserver(this);
         _form = new JDisplay(_messages);
@@ -33,30 +38,40 @@ public class Controller implements Observer
         Server s = new Server();
         s.addObserver(this);
         new Thread(s).start();
-
-        Client c = new Client();
-        c.addObserver(this);
-        new Thread(c).start();
     }
 
+    // fonction d'update à chaque fois qu'un message est émis
     @Override
     public void update(Observable o, Object arg)
     {
+        if (this._clients.get(i).getEstablishedConn())
+        {
+            this.i++;
+            this._clients.add(new Client());
+        }
         // if the Server has changed
         if (o instanceof Server)
         {
-            this._form.appendMessageFromController(" --- Establishing connexion ---");
             Server s = (Server) o;
-            this._form.appendMessageFromController(s.getMessage());
+            if (s.isThereNewCom())
+            {
+                s.getCommunication().addObserver(this);
+            }
+            else
+            {
+                this._form.appendMessageFromController(s.getMessage());
+            }
         }
         // if the communication has changed
         else if (o instanceof Communication)
         {
-
+            Communication c = (Communication) o;
+            this._form.appendMessageFromController(c.getMessage());
         }
         // if the client has changed
-        else
+        else if (o instanceof MessageObservable)
         {
+            this._clients.get(i).sendMessage(this._messages.getMessage());
 
         }
 

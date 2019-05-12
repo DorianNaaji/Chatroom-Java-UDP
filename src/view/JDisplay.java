@@ -31,22 +31,24 @@ public class JDisplay extends javax.swing.JFrame
         this._chatText.setEditable(false);
     }
 
-    public void appendMessageView()
+    private void appendMessageView()
     {
         String newChatText;
         if (_firstMessage)
         {
-            newChatText = this._chatText.getText() + this._textBoxMessage.getText();
+            newChatText = this._chatText.getText() + "Client : " + this._textBoxMessage.getText();
             this._firstMessage = false;
         }
         else
         {
-            newChatText = this._chatText.getText() + "\n" + this._textBoxMessage.getText();
+            newChatText = this._chatText.getText() + "\n" + "Client : " + this._textBoxMessage.getText();
         }
         this._chatText.setText(newChatText);
-        this._textBoxMessage.setText("");
-        this._messages.setMessage(newChatText);
+        this._messages.setMessage(this._textBoxMessage.getText());
+        this._messages.changed();
         this._messages.notifyObservers();
+        this._textBoxMessage.setText("");
+
     }
 
     public void appendMessageFromController(String message)
@@ -126,14 +128,14 @@ public class JDisplay extends javax.swing.JFrame
                                 .addComponent(_textBoxMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(_buttonSend, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 9, Short.MAX_VALUE)))
+                        .addGap(0, 43, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -181,4 +183,5 @@ public class JDisplay extends javax.swing.JFrame
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
+
 }

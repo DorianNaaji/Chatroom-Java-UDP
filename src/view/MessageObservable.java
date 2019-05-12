@@ -25,4 +25,9 @@ public class MessageObservable extends Observable
     {
         this._message = mess;
     }
+
+    public void changed()
+    {
+        this.setChanged();
+    }
 }

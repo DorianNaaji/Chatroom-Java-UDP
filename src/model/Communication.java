@@ -5,16 +5,14 @@
  */
 package model;
 
-import model.Utils;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Observable;
 
 /**
  *
  * @author Dorian
  */
-public class Communication extends Observable implements Runnable
+public class Communication extends AServer implements Runnable
 {
 
     private int _portDestinataire;
@@ -40,25 +38,28 @@ public class Communication extends Observable implements Runnable
             DatagramSocket ds = new DatagramSocket();
             String portPourContinuerEchange = "" + ds.getLocalPort();
             Utils.sendMessage(ds, portPourContinuerEchange, _portDestinataire);
+            this._message = "Server : Connexion established on PORT " + portPourContinuerEchange + " with Client " + _portDestinataire;
+            this.somethingChanged();
             try
             {
-                String reception = Utils.receiveMessage(ds);
+                this._message = Utils.receiveMessage(ds);
+                this.somethingChanged();
+
+                // ON POURRAIT CONTINUER ICI LES ECHANGES
+                //Utils.sendMessage(ds, "Serveur : Ok on est sur la même longueur d'onde", _portDestinataire);
+                //System.out.println(Utils.receiveMessage(ds));
             }
             catch (Exception exReception)
             {
                 System.out.println("COMMUNICATION - ERROR WHILE RECEIVING " + exReception);
             }
+
             ds.close();
         }
         catch (Exception exEnvoi)
         {
             System.out.println("COMMUNICATION - ERROR WHILE SENDING " + exEnvoi);
         }
-    }
-
-    private void manageNewCommunication()
-    {
-
     }
 
 }

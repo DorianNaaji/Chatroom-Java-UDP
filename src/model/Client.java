@@ -8,46 +8,37 @@ package model;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.Observable;
 
 /**
  *
  * @author Dorian
  */
-public class Client extends Observable implements Runnable
+public class Client extends Observable
 {
 
-    private static int _serverPort;
-    private static boolean _running = true;
-    private static DatagramSocket _ds;
+    private String _name;
+    private int _serverPort;
+    private DatagramSocket _ds;
+    private boolean _establishedConnexion = false;
+    private String _message;
 
-    @Override
-    public void run()
+    public boolean getEstablishedConn()
+    {
+        return this._establishedConnexion;
+    }
+
+    public Client()
     {
         try
         {
-            // On crée un nouveau socket
             _ds = new DatagramSocket();
-            // On envoie un message au serveur sur le port d'écoute du serveur connu part tout le monde
-            Utils.sendMessage(_ds, "CO", Utils.getServerListenedPort());
-            try
-            {
-                // On récupère la réponse du serveur
-                String reponseServeur = Utils.receiveMessage(_ds);
-                // Le serveur répond avec le port sur lequel il faut désormais communiquer.
-                System.out.println("Serveur : " + reponseServeur);
-                // on récupère le port
-                _serverPort = Integer.parseInt(reponseServeur);
-            }
-            catch (IOException exReception)
-            {
-                System.out.println("Client - Error occured while sending (run) : " + exReception);
-            }
-            _ds.close();
+            this._name = "Client " + this._ds.getLocalPort();
         }
-        catch (IOException exEnvoi)
+        catch (SocketException ex)
         {
-            System.out.println("Client - Error occured while sending (run) : " + exEnvoi);
+            System.out.println(ex);
         }
     }
 
@@ -55,7 +46,30 @@ public class Client extends Observable implements Runnable
     {
         try
         {
-            Utils.sendMessage(_ds, message, _serverPort);
+
+            // le client envoie au serveur sur le port connu
+            Utils.sendMessage(_ds, message, Utils.getServerListenedPort());
+
+            try
+            {
+                // le serveur lui répond (accusé de réception) par un numéro de port si le message était bon
+                this._serverPort = Integer.parseInt(Utils.receiveMessage(_ds));
+                // si le try passe, alors la connexion est établie
+                this._establishedConnexion = true;
+                // on fait répondre le client
+                Utils.sendMessage(_ds, this._name + " : Understood. I'll use port " + _serverPort, _serverPort);
+
+                // ON POURRAIT CONTINUER ICI LES ECHANGES
+                //System.out.println(Utils.receiveMessage(_ds));
+                //Utils.sendMessage(_ds, "Client : Oui j'espère bien", _serverPort);
+                // on pourrait alors continuer le dialogue entre le client et le serveur ici dans une autre fenêtre par exemple
+            }
+            catch (NumberFormatException nfe)
+            {
+                // Sinon, c'est que la conenxion est refusée
+                System.out.println("Connexion refusée !!!");
+            }
+
         }
         catch (UnsupportedEncodingException ex)
         {
@@ -67,14 +81,9 @@ public class Client extends Observable implements Runnable
         }
     }
 
-    public static void stopClient()
+    public String getName()
     {
-        _running = false;
-        closeSocket();
+        return this._name;
     }
 
-    public static void closeSocket()
-    {
-        _ds.close();
-    }
 }
