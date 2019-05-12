@@ -8,6 +8,7 @@ package controller;
 import java.util.Observable;
 import java.util.Observer;
 import model.Client;
+import model.Communication;
 import model.Server;
 import view.JDisplay;
 import view.MessageObservable;
@@ -44,9 +45,14 @@ public class Controller implements Observer
         // if the Server has changed
         if (o instanceof Server)
         {
-            this._form.appendMessageFromController(" --- Établissement de la connexion ---");
+            this._form.appendMessageFromController(" --- Establishing connexion ---");
             Server s = (Server) o;
             this._form.appendMessageFromController(s.getMessage());
+        }
+        // if the communication has changed
+        else if (o instanceof Communication)
+        {
+
         }
         // if the client has changed
         else

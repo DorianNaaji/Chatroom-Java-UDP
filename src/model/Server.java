@@ -21,13 +21,14 @@ public class Server extends Observable implements Runnable
 
     private boolean _running = true;
     private String _message = "";
+    Communication _com;
 
     public void stopServer()
     {
         this._running = false;
     }
 
-    private void newMessage()
+    private void somethingChanged()
     {
         this.setChanged();
         this.notifyObservers();
@@ -53,7 +54,7 @@ public class Server extends Observable implements Runnable
                 ds.receive(dr);
                 String reception = new String(dr.getData(), 0, dr.getLength());
                 this._message = "Client : " + reception;
-                this.newMessage();
+                this.somethingChanged();
 
                 // On stocke l'ip du client
                 InetAddress ipClient = dr.getAddress();
@@ -63,19 +64,20 @@ public class Server extends Observable implements Runnable
                 if ("CO".equals(reception))
                 {
                     // On crée un nouveau thread de communication, avec le port d'écoute du client et l'ip du client (qui en réalité est localhost pour notre cas)
-                    Communication com = new Communication(portClient, ipClient);
-                    com.run();
+                    this._com = new Communication(portClient, ipClient);
+                    this._com.run();
+                    this.somethingChanged();
                 }
                 else
                 {
-                    this._message = "Serveur : Le message recu de la part du client est inconnu. Fin de la connexion.";
+                    this._message = "Server : Unknow message from client. Ending transmissions.";
                 }
                 ds.close();
             }
         }
         catch (Exception ex)
         {
-            System.err.println("Exception - SERVEUR - erreur lors de la réception : " + ex);
+            System.err.println("Exception - ERROR WHILE RECEIVING " + ex);
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

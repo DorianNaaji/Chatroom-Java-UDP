@@ -8,12 +8,13 @@ package model;
 import model.Utils;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Observable;
 
 /**
  *
  * @author Dorian
  */
-public class Communication implements Runnable
+public class Communication extends Observable implements Runnable
 {
 
     private int _portDestinataire;
@@ -45,14 +46,19 @@ public class Communication implements Runnable
             }
             catch (Exception exReception)
             {
-                System.out.println("COMMUNICATION - Erreur lors de la reception : " + exReception);
+                System.out.println("COMMUNICATION - ERROR WHILE RECEIVING " + exReception);
             }
             ds.close();
         }
         catch (Exception exEnvoi)
         {
-            System.out.println("COMMUNICATION - Erreur lors de l'envoi : " + exEnvoi);
+            System.out.println("COMMUNICATION - ERROR WHILE SENDING " + exEnvoi);
         }
+    }
+
+    private void manageNewCommunication()
+    {
+
     }
 
 }

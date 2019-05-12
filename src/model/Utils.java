@@ -31,7 +31,8 @@ public class Utils
                 DatagramSocket ds = new DatagramSocket(portNumber);
                 ports.add(portNumber);
                 ds.close();
-            } catch (SocketException ex)
+            }
+            catch (SocketException ex)
             {
                 System.out.println("Erreur - Le port : " + portNumber + " est déjà utilisé.");
             }
@@ -42,18 +43,18 @@ public class Utils
     /**
      * Permet d'envoyer un message
      *
-     * @param dsEnvoi Le socket utilisé
+     * @param dsSend Le socket utilisé
      * @param message le message à envoyer
-     * @param portServer le port du serveur
+     * @param serverPort le port du serveur
      * @throws UnknownHostException
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    public static void sendMessage(DatagramSocket dsEnvoi, String message, int portServer) throws UnknownHostException, UnsupportedEncodingException, IOException
+    public static void sendMessage(DatagramSocket dsSend, String message, int serverPort) throws UnknownHostException, UnsupportedEncodingException, IOException
     {
         InetAddress ia = InetAddress.getByName("localhost");
-        DatagramPacket dp = new DatagramPacket(message.getBytes("ascii"), message.length(), ia, portServer);
-        dsEnvoi.send(dp);
+        DatagramPacket dp = new DatagramPacket(message.getBytes("ascii"), message.length(), ia, serverPort);
+        dsSend.send(dp);
     }
 
     /**
@@ -66,9 +67,9 @@ public class Utils
     public static String receiveMessage(DatagramSocket dsReception) throws IOException
     {
         byte[] buffer = new byte[500];
-        DatagramPacket reponseServeur = new DatagramPacket(buffer, buffer.length);
-        dsReception.receive(reponseServeur);
-        return new String(reponseServeur.getData(), 0, reponseServeur.getLength());
+        DatagramPacket serverResponse = new DatagramPacket(buffer, buffer.length);
+        dsReception.receive(serverResponse);
+        return new String(serverResponse.getData(), 0, serverResponse.getLength());
     }
 
     public static int getServerListenedPort()
